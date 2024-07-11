@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Real-Time Text-to-Image</title>
+        <style>
+            html, body {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                font-family: "Arial", sans-serif;
+            }
+            body {
+                display: flex;
+                flex-flow: column nowrap;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            section {
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                justify-content: center;
+                padding: 1em 0;
+                width: 100%;
+            }
+            input {
+                background-color: rgba(255,255,255,0.5);
+                color: black;
+                padding: 1em;
+                border-radius: 2em;
+                width: 100%;
+                max-width: 40em;
+                backdrop-filter: blur(.25em);
+                outline: none;
+                border: none;
+                text-align: center;
+                text-transform: lowercase;
+            }
+            #canvas {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+                background-color: black;
+                object-fit: cover;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width=512 height=512></canvas>
+        <section><input type="text" id="prompt" placeholder="Enter prompt" value="A cat wearing a hat" /></section>
+    </body>
+    <script type="module">
+        // Import the Taproot client. In production this will be at window.Taproot
+        import { Taproot } from "./taproot.js";
+        // Get the prompt input and canvas elements
+        const promptInput = document.getElementById("prompt");
+        const canvas = document.getElementById("canvas");
+        // Initialize the Taproot client
+        const client = new Taproot("ws://127.0.0.1:32189");
+        // Declare global variables
+        let lastPrompt = "";
+        let context = canvas.getContext("2d");
+        // This method will execute the inference and draw the image to the canvas
+        const executeInference = (promptData) => {
+            return new Promise(async (resolve, reject) => {
+                // The 'jpeg' output type is used here because it's the most efficient for the web
+                // You can requst a 'png' image instead but this is both slower to encode/decode and
+                // larger in size.
+                // We also disable uploading the result to the CDN and instead get the data directly
+                // from the inference response. Be advised when doing this that you will be responsible
+                // for saving the image data if you want to keep it around - a cache will be kept on
+                // the executor for a brief period of time but it is not guaranteed to be there when
+                // you need it.
+                let image = await client.invoke({
+                    "task": "image-generation",
+                    "model": "stable-diffusion-xl-turbo",
+                    "parameters": {
+                        "prompt": `RAW photo, ${promptData}, high resolution, best quality, shot with Fujifilm XT3, shot with Nikon D3, professional photography`,
+                        "output_format": "jpeg",
+                        "seed": 45894897,
+                        "num_inference_steps": 2,
+                    }
+                });
+                resolve();
+                context.drawImage(image, 0, 0);
+            });
+        };
+        // This method will loop forever, drawing the image to the canvas anytime the prompt changes
+        // We use a loop instead of an event listener so we don't accidentally queue up a bunch of inference requests
+        // while still waiting for the previous one to complete - this isn't a problem in this example, but it could be
+        // in a real-world application where you may end up spending money on inference requests that are never
+        // actually displayed to the user.
+        const inferenceLoop = async () => {
+            let promptData = promptInput.value;
+            if (promptData.length === 0) {
+                promptData = "a cat wearing a hat";
+            }
+            if (promptData !== lastPrompt) {
+                await executeInference(promptData);
+                lastPrompt = promptData;
+            }
+            setTimeout(inferenceLoop, 1);
+        };
+        inferenceLoop();
+    </script>
+</html>

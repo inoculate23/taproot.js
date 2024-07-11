@@ -1,0 +1,40 @@
+{
+  "name": "taproot-client",
+  "version": "0.1.0",
+  "description": "Taproot WebSocket Client",
+  "keywords": ["websocket", "taproot"],
+  "author": "Benjamin Paine <painebenjamin@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/painebenjamin/taproot.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/painebenjamin/taproot.js/issues"
+  },
+  "homepage": "https://github.com/painebenjamin/taproot.js#README",
+  "main": "dist/taproot.min.js",
+  "module": "dist/taproot.esm.mjs",
+  "scripts": {
+    "build": "webpack --config webpack.config.js && rollup -c",
+    "start": "node server.js",
+    "test": "node test.js",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "@msgpack/msgpack": "^3.0.0-beta2",
+    "@rollup/plugin-babel": "^6.0.4",
+    "babel-loader": "^8.2.2",
+    "express": "^4.17.1",
+    "rollup": "^2.52.7",
+    "terser-webpack-plugin": "^5.1.4",
+    "webpack": "^5.42.0",
+    "webpack-cli": "^4.7.2"
+  },
+  "dependencies": {
+    "jsdom": "^25.0.1",
+    "ws": "^8.18.0"
+  }
+}

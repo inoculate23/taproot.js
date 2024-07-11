@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Front-end Production Client Test</title>
+        <script src="/dist/taproot.min.js"></script>
+        <script>
+            (async () => {
+                if (!window.Taproot) {
+                    throw new Error("Taproot not found. Ensure it has been built and is available in the /dist directory.");
+                } else {
+                    const taproot = new Taproot("ws://127.0.0.1:32189");
+                    console.log(await taproot.send("status"));
+                }
+            })().catch(console.error);
+        </script>
+    </head>
+    <body>
+    </body>
+</html>

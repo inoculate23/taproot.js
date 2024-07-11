@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Front-end Production Client Test</title>
+        <script type="module">
+            import { Taproot } from "./taproot.js";
+            (async () => {
+                const taproot = new Taproot("ws://127.0.0.1:32189");
+                console.log(await taproot.send("status"));
+            })().catch(console.error);
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
