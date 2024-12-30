@@ -80,10 +80,22 @@ export class Taproot extends IDTrackingClient {
         }
         // Using relative address, so we need to determine the protocol and port from the current page.
         if (typeof window !== "undefined" && window.location !== undefined) {
-            if (window.location.protocol === "https:") {
-                return `wss://${window.location.host}${this.address}`;
+            let targetAddress = window.location.href.replace("http://", "ws://").replace("https://", "wss://");
+            if (!targetAddress.endsWith("/")) {
+                if (window.location.href === window.location.origin) {
+                    // Add a slash
+                    targetAddress += "/";
+                } else {
+                    // If the target address is not a directory, we want to trim to the directory.
+                    // e.g. ws://example.com/file/index.html -> ws://example.com/file/
+                    let lastSlash = targetAddress.lastIndexOf("/");
+                    targetAddress = targetAddress.substring(0, lastSlash + 1);
+                }
             }
-            return `ws://${window.location.host}${this.address}`;
+            if (this.address.startsWith("/")) {
+                return `${targetAddress}${this.address.substring(1)}`;
+            }
+            return `${targetAddress}${this.address}`;
         }
         return this.address; // Final fallback in non-browser environments.
     }
