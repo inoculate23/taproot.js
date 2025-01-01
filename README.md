@@ -1,20 +1,24 @@
 <div align="center">
-<img src="https://github.com/user-attachments/assets/f965fd42-2a95-4552-9b5f-465fc4037a91" /><br />
-<em><strong>TAPROOT</strong> - an open source real-time AI inference with seamless scaling</em>
-<h4>JavaScript Client</h4>
+<img src="https://github.com/user-attachments/assets/f965fd42-2a95-4552-9b5f-465fc4037a91" width="650" /><br />
+<em>An open source real-time AI inference engine for seamless scaling</em>
+<h1>JavaScript Client</h1>
+<a href="https://www.npmjs.com/package/taproot-client" target="_blank"><img src="https://img.shields.io/npm/dm/taproot-client?logo=npm&logoColor=white&color=234b0e" /></a>
+<a href="https://www.npmjs.com/package/taproot-client" target="_blank"><img src="https://img.shields.io/jsdelivr/npm/hm/taproot-client?logo=jsdelivr&logoColor=white&color=234b0e" /></a>
 </div>
 
-# Installation (Node)
+
+
+## Installation (Node)
 
 ```
 npm install taproot-client
 ```
 
-# Installation (Browser)
+## Installation (Browser)
 
 Include one of the compiled `.min.js` release files in your project.
 
-# Usage
+## Usage
 
 ```js
 // Point to a running taproot cluster
