@@ -78,6 +78,14 @@ export class Client {
                         throw new Error(`WebSocket connection is in state ${this.socket.readyState}.`);
                     }
                 } catch (error) {
+                    console.error("Error getting WebSocket connection:", error);
+                    if (this.socket !== null && this.socket !== undefined) {
+                        try {
+                            this.socket.close();
+                        } catch (error) {}
+                        delete this.socket;
+                    }
+                    this.dispatchError(error);
                     reject(error);
                 } finally {
                     release();
@@ -93,7 +101,6 @@ export class Client {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.lock.acquire().then((release) => {
                 this.socket.close();
-                this.socket.removeAllListeners();
                 delete this.socket;
                 release();
             });
