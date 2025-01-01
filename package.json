@@ -1,6 +1,6 @@
 {
   "name": "taproot-client",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Taproot WebSocket Client",
   "keywords": ["websocket", "taproot"],
   "author": "Benjamin Paine <painebenjamin@gmail.com>",

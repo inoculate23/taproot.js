@@ -77,6 +77,8 @@ export class Client {
                     } else {
                         throw new Error(`WebSocket connection is in state ${this.socket.readyState}.`);
                     }
+                } catch (error) {
+                    reject(error);
                 } finally {
                     release();
                 }
