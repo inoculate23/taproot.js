@@ -236,7 +236,6 @@ export class Encoder {
                     const imageUrl = URL.createObjectURL(imageBlob);
                     const image = new Image();
                     image.addEventListener("load", () => {
-                        URL.revokeObjectURL(imageUrl);
                         resolve(image);
                     });
                     image.src = imageUrl;
@@ -246,7 +245,6 @@ export class Encoder {
                     const audioUrl = URL.createObjectURL(audioBlob);
                     const audio = new Audio();
                     audio.addEventListener("loadeddata", () => {
-                        URL.revokeObjectURL(audioUrl);
                         resolve(audio);
                     });
                     audio.src = audioUrl;
