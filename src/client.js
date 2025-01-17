@@ -46,6 +46,13 @@ export class Client {
     }
 
     /**
+     * @returns {boolean} - Whether the client is websockets or http.
+     */
+    get isWebsocket() {
+        return this.address.startsWith("ws://") || this.address.startsWith("wss://");
+    }
+
+    /**
      * Get the WebSocket connection once it is open.
      *
      * @returns {Promise<WebSocket>} - A promise that resolves to the WebSocket connection.
@@ -230,33 +237,57 @@ export class Client {
      */
     send(message, wait = true) {
         if (this.debug) {
-            console.log("Sending message:", message);
+            console.log("Sending message:", message, "to", this.address);
         }
         return new Promise(async (resolve, reject) => {
             try {
-                let [websocket, encodedMessage] = await Promise.all([this.getWebsocket(), Encoder.encode(message)]);
-                if (wait) {
-                    let onMessage = (data) => { resolve(data); this.offMessage(onMessage); };
-                    let onError = (error) => { reject(error); this.offError(onError); }
-                    this.onMessage(onMessage);
-                    this.onError(onError);
-                }
-
-                let messageLength = new Uint8Array(new ArrayBuffer(4)),
-                    sentMessageLength = false;
-
-                new DataView(messageLength.buffer).setUint32(0, encodedMessage.length);
-
-                for (let chunk of chunkArray(encodedMessage, maximumMessageSize)) {
-                    if (!sentMessageLength) {
-                        await websocket.send(mergeTypedArrays([messageLength, chunk]));
-                        sentMessageLength = true;
-                    } else {
-                        await websocket.send(chunk);
+                if (this.isWebsocket) {
+                    let [websocket, encodedMessage] = await Promise.all([this.getWebsocket(), Encoder.encode(message)]);
+                    if (wait) {
+                        let onMessage = (data) => { resolve(data); this.offMessage(onMessage); };
+                        let onError = (error) => { reject(error); this.offError(onError); }
+                        this.onMessage(onMessage);
+                        this.onError(onError);
                     }
-                }
-                if (!wait) {
-                    resolve();
+
+                    let messageLength = new Uint8Array(new ArrayBuffer(4)),
+                        sentMessageLength = false;
+
+                    new DataView(messageLength.buffer).setUint32(0, encodedMessage.length);
+
+                    for (let chunk of chunkArray(encodedMessage, maximumMessageSize)) {
+                        if (!sentMessageLength) {
+                            await websocket.send(mergeTypedArrays([messageLength, chunk]));
+                            sentMessageLength = true;
+                        } else {
+                            await websocket.send(chunk);
+                        }
+                    }
+                    if (!wait) {
+                        resolve();
+                    }
+                } else {
+                    let encodedMessage = await Encoder.encode(message);
+                    let response = await fetch(
+                        this.address,
+                        {
+                            method: "POST",
+                            body: encodedMessage,
+                            headers: {
+                                "Content-Type": "application/octet-stream"
+                            }
+                        }
+                    );
+                    if (response.ok) {
+                        let data = await response.arrayBuffer();
+                        let decoded = await Encoder.decode(new Uint8Array(data));
+                        this.dispatchMessage(decoded);
+                        resolve(decoded);
+                    } else {
+                        let error = new Error(`Error sending message: ${response.statusText}`);
+                        this.dispatchError(error);
+                        reject(error);
+                    }
                 }
             } catch (error) {
                 reject(error);

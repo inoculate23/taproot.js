@@ -12,9 +12,6 @@ globalThis.FileReader = window.FileReader;
 globalThis.Blob = window.Blob;
 globalThis.File = window.File;
 
-// Environment variables
-const TEST_OVERSEER_URL = process.env.TEST_OVERSEER_URL || "ws://127.0.0.1:32189";
-
 // Test values for various types
 const testValues = [{
         label: "Integer",
@@ -128,32 +125,36 @@ async function deepEqual(original, echoed) {
  * Test routine to check each type, logging pass/fail for each item.
  */
 async function runTaprootTests(TaprootClass, artifactName) {
-    console.log(`\n=== Testing ${artifactName} ===`);
-    const taproot = new TaprootClass(TEST_OVERSEER_URL);
 
-    // Wait for WebSocket open or any "ready" if needed
-    for (let {label, value} of testValues) {
-        try {
-            const echoedValue = await taproot.invoke({
-                task: "echo",
-                parameters: {
-                    message: value
+    for (let overseerUrl of ["ws://127.0.0.1:32189", "http://127.0.0.1:32190"]) {
+        console.log(`\n=== Testing ${artifactName} at ${overseerUrl} ===`);
+        const taproot = new TaprootClass(overseerUrl);
+
+        // Wait for WebSocket open or any "ready" if needed
+        for (let {label, value} of testValues) {
+            try {
+                const startTime = Date.now();
+                const echoedValue = await taproot.invoke({
+                    task: "echo",
+                    parameters: {
+                        message: value
+                    }
+                });
+                const durationMilliseconds = Date.now() - startTime;
+
+                const passed = await deepEqual(value, echoedValue);
+                console.log(`[${artifactName} - ${label}] ${passed ? "PASS" : "FAIL"} in ${durationMilliseconds}ms`);
+                if (!passed) {
+                    console.error("  Original:", value);
+                    console.error("  Echoed:  ", echoedValue);
                 }
-            });
-
-            const passed = await deepEqual(value, echoedValue);
-            console.log(`[${artifactName} - ${label}] ${passed ? "PASS" : "FAIL"}`);
-            if (!passed) {
-                console.error("  Original:", value);
-                console.error("  Echoed:  ", echoedValue);
+            } catch (err) {
+                console.error(`[${artifactName} - ${label}] ERROR`, err);
             }
-        } catch (err) {
-            console.error(`[${artifactName} - ${label}] ERROR`, err);
         }
-    }
 
-    // Optionally close the connection if your class provides a method
-    taproot.close();
+        taproot.close();
+    }
 }
 
 /**

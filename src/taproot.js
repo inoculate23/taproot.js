@@ -75,12 +75,18 @@ export class Taproot extends IDTrackingClient {
      * @returns {string} The address of the overseer.
      */
     get completeAddress() {
-        if (this.address.startsWith("ws://") || this.address.startsWith("wss://")) {
+        if (
+            (this.isWebsocket && (this.address.startsWith("ws://") || this.address.startsWith("wss://"))) ||
+            (this.address.startsWith("http://") || this.address.startsWith("https://"))
+        ) {
             return this.address;
         }
         // Using relative address, so we need to determine the protocol and port from the current page.
         if (typeof window !== "undefined" && window.location !== undefined) {
-            let targetAddress = window.location.href.replace("http://", "ws://").replace("https://", "wss://");
+            let targetAddress = window.location.href;
+            if (this.isWebsocket) {
+                targetAddress = targetAddress.replace("http://", "ws://").replace("https://", "wss://");
+            }
             if (!targetAddress.endsWith("/")) {
                 if (window.location.href === window.location.origin) {
                     // Add a slash
@@ -118,7 +124,7 @@ export class Taproot extends IDTrackingClient {
     /**
      * Creates a new Taproot client.
      *
-     * @param {string} address - The address of the Taproot server. Either ws:// or wss://.
+     * @param {string} address - The address of the Taproot server. Either ws://, wss://, http://, or https://.
      * @returns {Tap} The Taproot client.
      */
     getClient(address) {
