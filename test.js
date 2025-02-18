@@ -125,7 +125,6 @@ async function deepEqual(original, echoed) {
  * Test routine to check each type, logging pass/fail for each item.
  */
 async function runTaprootTests(TaprootClass, artifactName) {
-
     for (let overseerUrl of ["ws://127.0.0.1:32189", "http://127.0.0.1:32190"]) {
         console.log(`\n=== Testing ${artifactName} at ${overseerUrl} ===`);
         const taproot = new TaprootClass(overseerUrl);

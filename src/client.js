@@ -53,6 +53,67 @@ export class Client {
     }
 
     /**
+     * @returns {boolean} - Whether the client is secure or not.
+     */
+    get isSecure() {
+        return this.address.startsWith("wss://") || this.address.startsWith("https://") || (!this.hasProtocol && window !== undefined && window.location.protocol === "https:");
+    }
+
+    /**
+     * Determines if an address has a protocol or not.
+     */
+    get hasProtocol() {
+        return this.addressHasProtocol(this.address);
+    }
+
+    /**
+     * Gets the hostname from the address, when possible, otherwise
+     * gets the hostname from the window location, and when that is not
+     * available, returns null.
+     */
+    get hostname() {
+        if (this.hasProtocol) {
+            return new URL(this.address).hostname;
+        } else if (window !== undefined && window.location !== undefined) {
+            return window.location.hostname;
+        }
+        return null;
+    }
+
+    /**
+     * Get the address of the server.
+     * An alias for the 'url' property.
+     */
+    get address() {
+        return this.url;
+    }
+
+    /**
+     * Set the address of the server.
+     *
+     * @param {string} newAddress - The new address of the server to connect to.
+     * If the address is the same as the current address, the function will return early.
+     * If the address is different from the current address, the function will close the current
+     * connection and open a new connection to the new address. Will NOT wait for that connection to open.
+     */
+    set address(newAddress) {
+        this.url = newAddress;
+        if (this.socket && this.socket.url === newAddress) {
+            return;
+        } else {
+            this.close();
+        }
+    }
+
+    /**
+     * A helper to determines if an address has a protocol or not.
+     */
+    addressHasProtocol(address) {
+        const protocolRegex = /^[a-z]+:\/\//;
+        return protocolRegex.test(address);
+    }
+
+    /**
      * Get the WebSocket connection once it is open.
      *
      * @returns {Promise<WebSocket>} - A promise that resolves to the WebSocket connection.
@@ -111,31 +172,6 @@ export class Client {
                 delete this.socket;
                 release();
             });
-        }
-    }
-
-    /**
-     * Get the address of the server.
-     * An alias for the 'url' property.
-     */
-    get address() {
-        return this.url;
-    }
-
-    /**
-     * Set the address of the server.
-     *
-     * @param {string} newAddress - The new address of the server to connect to.
-     * If the address is the same as the current address, the function will return early.
-     * If the address is different from the current address, the function will close the current
-     * connection and open a new connection to the new address. Will NOT wait for that connection to open.
-     */
-    set address(newAddress) {
-        this.url = newAddress;
-        if (this.socket && this.socket.url === newAddress) {
-            return;
-        } else {
-            this.close();
         }
     }
 

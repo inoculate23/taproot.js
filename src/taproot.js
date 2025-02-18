@@ -75,12 +75,10 @@ export class Taproot extends IDTrackingClient {
      * @returns {string} The address of the overseer.
      */
     get completeAddress() {
-        if (
-            (this.isWebsocket && (this.address.startsWith("ws://") || this.address.startsWith("wss://"))) ||
-            (this.address.startsWith("http://") || this.address.startsWith("https://"))
-        ) {
+        if (this.hasProtocol) {
             return this.address;
         }
+
         // Using relative address, so we need to determine the protocol and port from the current page.
         if (typeof window !== "undefined" && window.location !== undefined) {
             let targetAddress = window.location.href;
@@ -130,6 +128,24 @@ export class Taproot extends IDTrackingClient {
     getClient(address) {
         if (this.executors === null || this.executors === undefined) {
             this.executors = {};
+        }
+        if (this.isWebsocket && !this.addressHasProtocol(address)) {
+            if (address.startsWith("/")) {
+                address = address.substring(1);
+            }
+            if (this.hostname !== null) {
+                if (this.isSecure) {
+                    address = `wss://${this.hostname}/${address}`;
+                } else {
+                    address = `ws://${this.hostname}/${address}`;
+                }
+            } else {
+                if (this.isSecure) {
+                    address = `wss://${address}`;
+                } else {
+                    address = `ws://${address}`;
+                }
+            }
         }
         if (this.executors[address] === null || this.executors[address] === undefined) {
             if (this.debug) {
@@ -417,7 +433,7 @@ export class Taproot extends IDTrackingClient {
                         executor.address.startsWith("tcps://") ||
                         executor.address.startsWith("unix://")
                     ) {
-                        reject(`Executor is not configured for websocket communication, received: ${executor.address}`);
+                        reject(`Executor is not configured for websocket or HTTP communication, received: ${executor.address}`);
                         return;
                     }
                     payload.parameters = data;
