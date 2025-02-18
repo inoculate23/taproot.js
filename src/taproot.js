@@ -133,11 +133,11 @@ export class Taproot extends IDTrackingClient {
             if (address.startsWith("/")) {
                 address = address.substring(1);
             }
-            if (this.hostname !== null) {
+            if (this.host !== null) {
                 if (this.isSecure) {
-                    address = `wss://${this.hostname}/${address}`;
+                    address = `wss://${this.host}/${address}`;
                 } else {
-                    address = `ws://${this.hostname}/${address}`;
+                    address = `ws://${this.host}/${address}`;
                 }
             } else {
                 if (this.isSecure) {

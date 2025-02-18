@@ -67,15 +67,15 @@ export class Client {
     }
 
     /**
-     * Gets the hostname from the address, when possible, otherwise
-     * gets the hostname from the window location, and when that is not
+     * Gets the host from the address, when possible, otherwise
+     * gets the host from the window location, and when that is not
      * available, returns null.
      */
-    get hostname() {
+    get host() {
         if (this.hasProtocol) {
-            return new URL(this.address).hostname;
+            return new URL(this.address).host;
         } else if (window !== undefined && window.location !== undefined) {
-            return window.location.hostname;
+            return window.location.host;
         }
         return null;
     }
