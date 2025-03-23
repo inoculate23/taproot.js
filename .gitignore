@@ -13,8 +13,7 @@ yarn-error.log*
 jspm_packages/
 
 # Build outputs
-dist/
-build/
+
 
 # IDE and editor files
 .vscode/
