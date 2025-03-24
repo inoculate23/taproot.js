@@ -6,17 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Front-end Production Client Test</title>
     <script src="./dist/assets/index-CH_GkZcW.js"></script>
-    <scri[pt src="./dist/taproot.min.js"></script>]
-    <script>
-        (async () => {
-            if (!window.Taproot) {
-                throw new Error("Taproot not found. Ensure it has been built and is available in the /dist directory.");
-            } else {
-                const taproot = new Taproot("ws://127.0.0.1:32189");
-                console.log(await taproot.send("status"));
-            }
-        })().catch(console.error);
-    </script>
+    <script type="module" src="./dist/taproot.min.js"></script>
+     <script type="module">
+	     import 'dotenv/config'
+     </script>
+
             <style>
                 html, body {
                     padding: 0;
@@ -109,7 +103,16 @@ query({ inputs: "Astronaut riding a horse" }).then((response) => {
 <section><input type="text" id="prompt" placeholder="Enter prompt" value="A cat wearing a hat" />
 
     <input type="text" id="hf" placeholder="Enter HF Token"  /></section>
-
+   <script>
+        (async () => {
+            if (!window.Taproot) {
+                throw new Error("Taproot not found. Ensure it has been built and is available in the /dist directory.");
+            } else {
+                const taproot = new Taproot("ws://127.0.0.1:32189");
+                console.log(await taproot.send("status"));
+            }
+        })().catch(console.error);
+    </script>
  
 </body>
 
