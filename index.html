@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Front-end Production Client Test</title>
-    <script src="./dist/assets/index-CH_GkZcW.js"></script>
-    <script type="module" src="./dist/taproot.min.js"></script>
+
      <script type="module">
 	     import './node_modules/dotenv/config'
      </script>
@@ -101,6 +100,7 @@ query({ inputs: "Astronaut riding a horse" }).then((response) => {
 
 <canvas id="canvas" width=512 height=512></canvas>
 <section><input type="text" id="prompt" placeholder="Enter prompt" value="A cat wearing a hat" />
+    <script type="module" src="./dist/taproot.min.js"></script>
 
    <script>
         (async () => {
@@ -112,7 +112,7 @@ query({ inputs: "Astronaut riding a horse" }).then((response) => {
             }
         })().catch(console.error);
     </script>
- 
+     <script src="./dist/assets/index-CH_GkZcW.js"></script>
 </body>
 
 </html>
