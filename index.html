@@ -60,13 +60,12 @@
 </head>
 
 <body>
+	<canvas width="550px: height="550px"></canvas>
 <section><input type="text" id="prompt" placeholder="Enter prompt" value="A cat wearing a hat" />
 </section>
 	<script type="module">
 import taproot from "./dist/taproot.min.js";
-		const canvas = document.createElement("canvas");
-		canvas.setAttribute("id", "canvas");
-				    document.body.append(canvas);
+		const canvas = document.getElementById("canvas");
 // Point to a running taproot cluster
 const taproot = new Taproot("ws://127.0.0.1:32189");
 
