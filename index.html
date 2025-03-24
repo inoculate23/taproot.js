@@ -62,15 +62,28 @@
 <body>
  
     <script>
-        (async () => {
-            if (!window.Taproot) {
-                throw new Error("Taproot not found. Ensure it has been built and is available in the /dist directory.");
-            } else {
-                const taproot = new Taproot("ws://127.0.0.1:32189");
-                console.log(await taproot.send("status"));
-            }
-        })().catch(console.error);
-    </script>
+// Point to a running taproot cluster
+const taproot = new Taproot("ws://127.0.0.1:32189");
+
+// Request an echo, response is the same type as sent
+taproot.invoke({
+  task: "echo",
+  parameters: {
+    message: "Hello, world!"
+  }
+}).then(console.log).catch(console.error);
+
+// Requests an image using SDXL turbo then outputs it to the document
+let appendToDocument = document.body.append.bind(document.body);
+taproot.invoke({
+  task: "image-generation",
+  model: "stable-diffusion-xl-turbo",
+  parameters: {
+    prompt: "A cat wearing a hat",
+    output_type: "jpg"
+  }
+}).then(appendToDocument).catch(console.error);
+</script>
   
     <script> 
     
@@ -102,16 +115,7 @@ query({ inputs: "Astronaut riding a horse" }).then((response) => {
 <section><input type="text" id="prompt" placeholder="Enter prompt" value="A cat wearing a hat" />
     <script type="module" src="./dist/taproot.min.js"></script>
 
-   <script>
-        (async () => {
-            if (!window.Taproot) {
-                throw new Error("Taproot not found. Ensure it has been built and is available in the /dist directory.");
-            } else {
-                const taproot = new Taproot("ws://127.0.0.1:32189");
-                console.log(await taproot.send("status"));
-            }
-        })().catch(console.error);
-    </script>
+  
      <script src="./dist/assets/index-CH_GkZcW.js"></script>
 </body>
 
