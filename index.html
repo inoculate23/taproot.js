@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Front-end Production Client Test</title>
 
-  
-
-
             <style>
                 html, body {
                     padding: 0;
@@ -62,8 +59,8 @@
 	<canvas width="550px: height="550px"></canvas>
 <section><input type="text" id="prompt" placeholder="Enter prompt" value="A cat wearing a hat" />
 </section>
-	<script type="module">
-import taproot from "./dist/taproot.min.js";
+	<script>
+
 		const canvas = document.getElementById("canvas");
 // Point to a running taproot cluster
 const taproot = new Taproot("ws://127.0.0.1:32189");
@@ -87,9 +84,6 @@ taproot.invoke({
   }
 }).then(appendToDocument).catch(console.error);
 </script>
-  
-
-
 </body>
 
 </html>
