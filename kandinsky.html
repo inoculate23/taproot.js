@@ -4,7 +4,21 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Real-Time Text-to-Image</title>
-        <script src="./gradio.js"></script>
+        <script type="module">
+            import { Client } from "@gradio/client";
+
+const app = await Client.connect("inoculatemedia/kandinsky-4-t2v-flash");
+					
+await client.predict(
+  "/video", {
+    prompt: "bronze bee  kush modern
+",
+    resolution: "16:9 (672x384)",
+});
+						
+
+
+        </script>
 
         <style>
             html, body {
