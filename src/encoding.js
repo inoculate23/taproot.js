@@ -1,7 +1,7 @@
 /** @module encoding */
 import { NDArray } from "./ndarray.js";
-import { encode } from "./msgpack/encode.mjs";
-import { decode } from "./msgpack/decode.mjs";
+import { encode } from "../node_modules/@msgpack/msgpack/encode.mjs";
+import { decode } from "../node_modules/@msgpack/msgpack/decode.mjs";
 
 /**
  * Gets the python type name for a given javascript type.
